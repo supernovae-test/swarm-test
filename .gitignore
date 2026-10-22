@@ -1,0 +1,4 @@
+.swarm/worktrees/
+.swarm/active/
+.swarm/local/
+.swarm/locks/
