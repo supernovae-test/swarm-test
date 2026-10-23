@@ -1,0 +1,48 @@
+name: SwarmOS Validation
+
+on:
+  pull_request:
+  push:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swarm-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: '1.26.10'
+          cache: false
+      - name: Install pinned SwarmOS validator
+        env:
+          SWARM_VERSION: v0.6.0
+          GOBIN: ${{ runner.temp }}/swarm-bin
+        working-directory: ${{ runner.temp }}
+        run: go install github.com/supernovae/swarmos/cmd/swarm@"$SWARM_VERSION"
+      - name: Configure project runtime
+        run: |
+          echo 'Configure project-specific runtime prerequisites and required checks in .swarm/validation/required-checks.yaml.' >&2
+          exit 1
+
+      # Check commands come from the trusted base, never the candidate's policy.
+      - name: Validate against trusted base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = 0000000000000000000000000000000000000000 ]; then
+            echo 'No trusted base: bootstrap and review the harness before enabling this workflow.' >&2
+            exit 1
+          fi
+          "$RUNNER_TEMP/swarm-bin/swarm" repo validate --base "$BASE_SHA"
