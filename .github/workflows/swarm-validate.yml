@@ -27,7 +27,7 @@ jobs:
           cache: false
       - name: Install pinned SwarmOS validator
         env:
-          SWARM_VERSION: v0.6.1-0.20261024023812-beec09bcf3f9
+          SWARM_VERSION: v0.6.1-0.20261024025422-46c06b1d9d62
           GOBIN: ${{ runner.temp }}/swarm-bin
         working-directory: ${{ runner.temp }}
         run: go install github.com/supernovae/swarmos/cmd/swarm@"$SWARM_VERSION"
