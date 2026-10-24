@@ -27,7 +27,7 @@ jobs:
           cache: false
       - name: Install pinned SwarmOS validator
         env:
-          SWARM_VERSION: v0.6.1-0.20261024023605-2502a56cc601
+          SWARM_VERSION: v0.6.1-0.20261024023812-beec09bcf3f9
           GOBIN: ${{ runner.temp }}/swarm-bin
         working-directory: ${{ runner.temp }}
         run: go install github.com/supernovae/swarmos/cmd/swarm@"$SWARM_VERSION"
@@ -44,6 +44,11 @@ jobs:
           # behind it, which would count newer target commits as PR changes.
           if [ "$EVENT_NAME" = pull_request ] && git rev-parse -q --verify HEAD^2 >/dev/null; then
             BASE_SHA=$(git rev-parse HEAD^1)
+          fi
+          # A push to the default branch is trusted policy, including harness
+          # upgrades maintainers commit there; check it against its own policy.
+          if [ "$EVENT_NAME" = push ]; then
+            BASE_SHA=$(git rev-parse HEAD)
           fi
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = 0000000000000000000000000000000000000000 ]; then
             echo 'No trusted base: bootstrap and review the harness before enabling this workflow.' >&2

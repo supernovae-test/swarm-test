@@ -78,7 +78,7 @@ jobs:
           cache: false
       - name: Install pinned SwarmOS coordinator
         env:
-          SWARM_VERSION: v0.6.1-0.20261024023605-2502a56cc601
+          SWARM_VERSION: v0.6.1-0.20261024023812-beec09bcf3f9
           GOBIN: ${{ runner.temp }}/swarm-bin
         working-directory: ${{ runner.temp }}
         run: |
