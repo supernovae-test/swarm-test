@@ -27,14 +27,11 @@ jobs:
           cache: false
       - name: Install pinned SwarmOS validator
         env:
-          SWARM_VERSION: v0.6.1-0.20261024004501-738c8891996b
+          SWARM_VERSION: v0.6.1-0.20261024010932-08124807ec93
           GOBIN: ${{ runner.temp }}/swarm-bin
         working-directory: ${{ runner.temp }}
         run: go install github.com/supernovae/swarmos/cmd/swarm@"$SWARM_VERSION"
-      - name: Configure project runtime
-        run: |
-          echo 'Configure project-specific runtime prerequisites and required checks in .swarm/validation/required-checks.yaml.' >&2
-          exit 1
+      # No language runtime was detected; add setup steps here if your required checks need one.
 
       # Check commands come from the trusted base, never the candidate's policy.
       - name: Validate against trusted base
